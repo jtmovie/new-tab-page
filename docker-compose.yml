@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  new-tab-page:
+    build: .
+    container_name: new-tab-page
+    ports:
+      - "3000:80"
+    restart: unless-stopped
