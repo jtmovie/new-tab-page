@@ -1,0 +1,45 @@
+name: Deploy to Dokploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js static site
+        run: npm run build
+
+      - name: Deploy to Dokploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DOKPLOY_HOST }}
+          username: ${{ secrets.DOKPLOY_USER }}
+          key: ${{ secrets.DOKPLOY_KEY }}
+          script: |
+            # 导航到 Dokploy 应用目录
+            cd /home/data/compose/new-tab-page
+
+            # 确保 app 目录存在并清空
+            mkdir -p app
+            rm -rf app/*
+
+            # 复制构建产物到 app 目录
+            cp -r out/* app/
+
+            # 重启应用（如果 Dokploy 启用了文件监控会自动重启）
+            echo "Deployment successful at $(date)"
