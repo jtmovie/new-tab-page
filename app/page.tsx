@@ -92,7 +92,7 @@ function GitHubTrending() {
         const items = doc.querySelectorAll('.Box-row')
 
         const trendingRepos: Repo[] = []
-        items.slice(0, 10).forEach((item, index) => {
+        Array.from(items).slice(0, 10).forEach((item, index) => {
           const link = item.querySelector('h2 a')
           const desc = item.querySelector('.col-repo-description')
           const stars = item.querySelector('.d-flex a[href$="stargazers"]')
